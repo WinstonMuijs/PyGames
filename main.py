@@ -1,6 +1,9 @@
 import pygame
 import sys
 
+from pygame import Rect
+from pygame.rect import RectType
+
 pygame.init()
 
 WIDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
@@ -14,7 +17,8 @@ clock = pygame.time.Clock()  # limit max frame rate
 # importing images&text
 # converting for optimizing
 spaceship = pygame.image.load('graphics/ship.png').convert_alpha()
-spaceship_rec = spaceship.get_rect(center=(WIDOW_WIDTH/2, WINDOW_HEIGHT/2))  # creating rectangles for placing and movement
+# creating rectangles for placing and movement
+spaceship_rec = spaceship.get_rect(center=(WIDOW_WIDTH/2, WINDOW_HEIGHT/2))
 background = pygame.image.load('graphics/background.png').convert()
 
 # import text
@@ -29,18 +33,30 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()   # quits the game
             sys.exit()
+
+        # inputs
+        # if event.type == pygame.MOUSEMOTION:
+        #     spaceship_rec = event.pos
+
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     print("shoot")
+
     # frame rate
     clock.tick(120)
 
-    # 2. updates,
-    # layers of the game, orders matter
+    # mouse input
+    # set ship on mouse position
+    spaceship_rec = pygame.mouse.get_pos()
+
+    # 2. updates, layers of the game, orders matter
     display_surface.fill((0, 0, 0))  # display_surface
     display_surface.blit(background, (0, 0))  # background
 
-    if spaceship_rec.top > 0:  # if spaceship at top of window, stop movement
-        spaceship_rec.y -= 4  # movement per cycle or iteration of the while loop
+    # if spaceship_rec.top > 0:  # if spaceship at top of window, stop movement
+    #     spaceship_rec.y -= 4  # movement per cycle or iteration of the while loop
 
-    display_surface.blit(spaceship, spaceship_rec ) # positioning surface and control movement
+    # positioning surface and control movement
+    display_surface.blit(spaceship, spaceship_rec)
     display_surface.blit(text, text_rec)
 
     # test.fill("navy")             # surface
