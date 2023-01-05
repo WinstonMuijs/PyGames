@@ -29,7 +29,9 @@ background = pygame.image.load('graphics/background.png').convert()
 # import text
 font = pygame.font.Font('graphics/subatomic.ttf', 50)
 text = font.render("Galaxy", True, "seagreen1")
-text_rec = text.get_rect(center=(WIDOW_WIDTH/2, WINDOW_HEIGHT-25))
+text_rec = text.get_rect(center=(WIDOW_WIDTH/2, WINDOW_HEIGHT-50))
+
+# drawing rectangle
 
 # Keeps the game running in a loop
 while True:
@@ -62,9 +64,14 @@ while True:
     laser_rec.y -= 10  # movement laser
 
     # positioning surface, drawing images and control movement
-    display_surface.blit(spaceship, spaceship_rec)
     display_surface.blit(text, text_rec)
     display_surface.blit(laser, laser_rec)
+
+    # pygame.draw.rect()
+    pygame.draw.rect(display_surface, 'purple',
+                     text_rec.inflate(30, 30), width=8, border_radius=5)
+
+    display_surface.blit(spaceship, spaceship_rec)
 
     # test.fill("navy")             # surface
     # # placing
