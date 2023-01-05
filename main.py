@@ -4,8 +4,8 @@ import sys
 from pygame import Rect
 from pygame.rect import RectType
 
+# game initiate
 pygame.init()
-
 WIDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WIDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Galaxy Shooter")
@@ -16,9 +16,14 @@ clock = pygame.time.Clock()  # limit max frame rate
 
 # importing images&text
 # converting for optimizing
+# spaceship
 spaceship = pygame.image.load('graphics/ship.png').convert_alpha()
 # creating rectangles for placing and movement
 spaceship_rec = spaceship.get_rect(center=(WIDOW_WIDTH/2, WINDOW_HEIGHT/2))
+# laser
+laser = pygame.image.load('graphics/laser.png').convert_alpha()
+laser_rec = laser.get_rect(midbottom=(spaceship_rec.midtop))
+# background
 background = pygame.image.load('graphics/background.png').convert()
 
 # import text
@@ -54,10 +59,12 @@ while True:
 
     # if spaceship_rec.top > 0:  # if spaceship at top of window, stop movement
     #     spaceship_rec.y -= 4  # movement per cycle or iteration of the while loop
+    laser_rec.y -= 10  # movement laser
 
-    # positioning surface and control movement
+    # positioning surface, drawing images and control movement
     display_surface.blit(spaceship, spaceship_rec)
     display_surface.blit(text, text_rec)
+    display_surface.blit(laser, laser_rec)
 
     # test.fill("navy")             # surface
     # # placing
