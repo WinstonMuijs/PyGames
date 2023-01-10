@@ -8,6 +8,7 @@ def laser_update(storage, speed=300):
         if rec.bottom < 0:    # removes laser not inside the window out of list
             storage.remove(rec)
 
+
 # using time for the score
 def display_score():
     score_text = f'Score: {pygame.time.get_ticks()//1000}'
@@ -16,6 +17,16 @@ def display_score():
     display_surface.blit(text, text_rec)
     pygame.draw.rect(display_surface, 'purple',
                      text_rec.inflate(30, 30), width=8, border_radius=5)
+
+
+# laser timer
+
+def laser_timer(shoot, duration=500):
+    if not shoot:
+        current_time = pygame.time.get_ticks()
+        if current_time - shoot_time > duration:
+            shoot = True
+    return shoot
 
 # game initiate
 pygame.init()
@@ -41,7 +52,10 @@ background = pygame.image.load('graphics/background.png').convert()
 # laser import
 laser = pygame.image.load('graphics/laser.png').convert_alpha()
 laser_storage = []
-# laser_rec = laser.get_rect(midbottom = spaceship_rec.midtop)
+
+# laser timer
+can_shoot = True
+shoot_time = None
 
 # import text
 font = pygame.font.Font('graphics/subatomic.ttf', 50)
@@ -56,9 +70,13 @@ while True:
             pygame.quit()  # quits the game
             sys.exit()
         # player input, shooting the laser
-        if event.type == pygame.MOUSEBUTTONDOWN:  # 0.5 seconds of delay before we can shoot again.
+        if event.type == pygame.MOUSEBUTTONDOWN and can_shoot: # 0.5 seconds of delay before we can shoot again.
+            # laser
             laser_rect = laser.get_rect(midbottom=spaceship_rec.midtop)
             laser_storage.append(laser_rect)
+            # timer
+            can_shoot = False
+            shoot_time = pygame.time.get_ticks() # time when shooting laser
     # frame rate
     dt = clock.tick(120) / 1000  # Delta Time in seconds instead of ms, so divided by 1000.
     # dT makes it possible that the speed is constant on very computer while playing the game.
@@ -73,6 +91,7 @@ while True:
 
     # update laser, movement laser
     laser_update(laser_storage)
+    can_shoot = laser_timer(can_shoot)  # delay in shooting through timer
     # update laser score:
     display_score()
     # positioning surface, drawing images and control movement
