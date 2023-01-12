@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # movement and removing laser from list
 def laser_update(storage, speed=300):
@@ -9,11 +10,20 @@ def laser_update(storage, speed=300):
             storage.remove(rec)
 
 
+def asteroid_update(asteroid_list, speed=500):
+    for asteroid_tuple in asteroid_list:
+        directions = asteroid_tuple[1]
+        asteroid_rect = asteroid_tuple[0]
+        asteroid_rect.center += directions * speed * dt
+        if asteroid_rect.top > WINDOW_HEIGHT:
+            asteroid_list.remove(asteroid_tuple)
+
+
 # using time for the score
 def display_score():
     score_text = f'Score: {pygame.time.get_ticks()//1000}'
     text = font.render(score_text, True, "seagreen1")
-    text_rec = text.get_rect(center=(WIDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
+    text_rec = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
     display_surface.blit(text, text_rec)
     pygame.draw.rect(display_surface, 'purple',
                      text_rec.inflate(30, 30), width=8, border_radius=5)
@@ -30,8 +40,8 @@ def laser_timer(shoot, duration=500):
 
 # game initiate
 pygame.init()
-WIDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-display_surface = pygame.display.set_mode((WIDOW_WIDTH, WINDOW_HEIGHT))
+WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
+display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Galaxy Shooter")
 clock = pygame.time.Clock()  # limit max frame rate
 # create a surface
@@ -44,8 +54,8 @@ clock = pygame.time.Clock()  # limit max frame rate
 # spaceship
 spaceship = pygame.image.load('graphics/ship.png').convert_alpha()
 # creating rectangles for placing and movement
-spaceship_rec = spaceship.get_rect(center=(WIDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
-print(type(spaceship_rec))
+spaceship_rec = spaceship.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+
 # background
 background = pygame.image.load('graphics/background.png').convert()
 
@@ -60,7 +70,13 @@ shoot_time = None
 # import text
 font = pygame.font.Font('graphics/subatomic.ttf', 50)
 
-# drawing rectangle
+# asteroid import
+asteroid = pygame.image.load('graphics/meteor.png').convert_alpha()
+asteroid_list = []
+
+# asteroid timer
+asteroid_timer = pygame.event.custom_type()
+pygame.time.set_timer(asteroid_timer, 500)
 
 # Keeps the game running in a loop
 while True:
@@ -77,6 +93,22 @@ while True:
             # timer
             can_shoot = False
             shoot_time = pygame.time.get_ticks() # time when shooting laser
+
+            # asteroid
+        if event.type == asteroid_timer:
+            # random position
+            x_pos = random.randint(-100, WINDOW_WIDTH + 100)
+            y_pos = random.randint(-100, -50)
+
+            # random direction asteroids
+            direction = pygame.math.Vector2(random.uniform(-0.5, 0.5), 1)
+
+            # creating asteroids and adding to list
+            asteroid_rec = asteroid.get_rect(center=(x_pos, -y_pos))
+            asteroid_list.append((asteroid_rec, direction))
+
+
+
     # frame rate
     dt = clock.tick(120) / 1000  # Delta Time in seconds instead of ms, so divided by 1000.
     # dT makes it possible that the speed is constant on very computer while playing the game.
@@ -94,10 +126,14 @@ while True:
     can_shoot = laser_timer(can_shoot)  # delay in shooting through timer
     # update laser score:
     display_score()
+    # asteroid update
+    asteroid_update(asteroid_list)
     # positioning surface, drawing images and control movement
-
     for rect in laser_storage:
         display_surface.blit(laser, rect)
+
+    for as_tuple in asteroid_list:
+        display_surface.blit(asteroid, as_tuple[0])
 
     display_surface.blit(spaceship, spaceship_rec)
 
