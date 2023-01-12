@@ -10,7 +10,7 @@ def laser_update(storage, speed=300):
             storage.remove(rec)
 
 
-def asteroid_update(asteroid_list, speed=500):
+def asteroid_update(asteroid_list, speed=400):
     for asteroid_tuple in asteroid_list:
         directions = asteroid_tuple[1]
         asteroid_rect = asteroid_tuple[0]
@@ -128,6 +128,20 @@ while True:
     display_score()
     # asteroid update
     asteroid_update(asteroid_list)
+
+    # collisions asteroids with spaceship
+    for asteroid_tuple in asteroid_list:
+        if spaceship_rec.colliderect(asteroid_tuple[0]):
+            pygame.quit()
+            sys.exit()
+
+    # laser asteroid collisions
+    for laser_rect in laser_storage:
+        for asteroid_tuple in asteroid_list:
+            if laser_rect.colliderect(asteroid_tuple[0]):
+                asteroid_list.remove(asteroid_tuple)
+                laser_storage.remove(laser_rect)
+
     # positioning surface, drawing images and control movement
     for rect in laser_storage:
         display_surface.blit(laser, rect)
